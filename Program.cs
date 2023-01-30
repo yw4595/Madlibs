@@ -7,80 +7,63 @@ namespace MadLibs
     {
         static void Main(string[] args)
         {
-            //Author: ChatGPT
-            //Purpose: Entry point for the Mad Libs game program
-            //Restrictions: None
-            // Prompt user to play Mad Libs
-            Console.WriteLine("Welcome to Mad Libs! Would you like to play? (yes/no)");
-            string play = Console.ReadLine();
-            // Validate user input
-            while (!play.Equals("yes", StringComparison.InvariantCultureIgnoreCase) && !play.Equals("no", StringComparison.InvariantCultureIgnoreCase))
+            Console.WriteLine("Do you want to play Mad Libs? (yes/no)");
+            string playGame = Console.ReadLine();
+
+            while (playGame.ToLower() != "yes" && playGame.ToLower() != "no")
             {
-                Console.WriteLine("Invalid input. Please enter either 'yes' or 'no':");
-                play = Console.ReadLine();
+                Console.WriteLine("Invalid input. Please enter either 'yes' or 'no'.");
+                playGame = Console.ReadLine();
             }
 
-            // If user chooses to play
-            if (play.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
+            if (playGame.ToLower() == "yes")
             {
-                // Read stories from file
-                string[] stories = ReadStoriesFromFile();
+                Console.WriteLine("Enter your name: ");
+                string name = Console.ReadLine();
 
-                // Display story options to user
-                Console.WriteLine("Please choose a story (1-" + stories.Length + "):");
-                for (int i = 0; i < stories.Length; i++)
+                string[] lines = File.ReadAllLines("C:\\Users\\Wiz\\Desktop\\IGME 201\\MadLibs\\bin\\Debug\\MadLibsTemplate.txt");
+                int numOfStories = lines.Length;
+
+                Console.WriteLine("Hi " + name + ", there are " + numOfStories + " stories to choose from.");
+                Console.WriteLine("Please enter a story number (1-" + numOfStories + "): ");
+
+                int storyNum = int.Parse(Console.ReadLine());
+                while (storyNum < 1 || storyNum > numOfStories)
                 {
-                    Console.WriteLine((i + 1) + ": " + stories[i].Split(new string[] { "\n" }, StringSplitOptions.None)[0]);
+                    Console.WriteLine("Invalid story number. Please enter a number between 1 and " + numOfStories + ".");
+                    storyNum = int.Parse(Console.ReadLine());
                 }
 
-                // Validate user's story choice
-                int storyIndex = -1;
-                while (storyIndex < 0 || storyIndex >= stories.Length)
+                string chosenStory = lines[storyNum - 1];
+                string[] words = chosenStory.Split(' ');
+                string resultString = "";
+
+                foreach (string word in words)
                 {
-                    Console.WriteLine("Invalid story choice. Please enter a number between 1 and " + stories.Length + ":");
-                    int.TryParse(Console.ReadLine(), out storyIndex);
-                    storyIndex--;
+                    if (word == "\n")
+                    {
+                        resultString += "\n";
+                    }
+                    else if (word[0] == '{')
+                    {
+                        string prompt = word.Replace("_", " ");
+                        prompt = prompt.Replace("{", "");
+                        prompt = prompt.Replace("}", "");
+                        Console.Write(prompt + ": ");
+                        string userInput = Console.ReadLine();
+                        resultString += userInput + " ";
+                    }
+                    else
+                    {
+                        resultString += word + " ";
+                    }
                 }
-
-                // Fill in story with user input
-                string resultString = FillInStory(stories[storyIndex]);
-
-                // Display completed story
-                Console.WriteLine(resultString);
+                Console.WriteLine("\n" + resultString);
             }
             else
             {
-                Console.WriteLine("Goodbye!");
+                Console.WriteLine("Goodbye.");
             }
-        }
-
-        /*
-         * Reads stories from file
-         * 
-         * Returns:
-         *   string[] - the stories read from the file
-         */
-        static string[] ReadStoriesFromFile()
-        {
-            // Read stories from file
-            string[] stories = File.ReadAllLines("MadLibsTemplate.txt");
-
-            return stories;
-        }
-
-        /*
-         * Fills in the story with user input
-         * 
-         * Parameters:
-         *   story - the story to fill in
-         * 
-         * Returns:
-         *   string - the completed story
-         */
-        static string FillInStory(string story)
-        {
-            // TODO: Implement this method
-            return null;
         }
     }
 }
